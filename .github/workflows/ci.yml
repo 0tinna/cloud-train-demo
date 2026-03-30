@@ -3,6 +3,8 @@ name: ci
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -20,6 +22,14 @@ jobs:
         with:
           python-version: 3.10
 
+      - name: Install Ruff
+        run: |
+          python -m pip install ruff
+
+      - name: Ruff lint
+        run: |
+          ruff check .
+
       - name: Python syntax check
         run: |
           python -m py_compile app/app.py
@@ -31,3 +41,7 @@ jobs:
       - name: Docker Compose config validation
         run: |
           docker compose -f compose.yaml config -q
+
+      - name: Docker build
+        run: |
+          docker build -t cicd-lab-app:ci .
